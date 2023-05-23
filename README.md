@@ -13,5 +13,10 @@ rm apache-zookeeper-3.8.1-bin.tar.gz
 
 # Change log temp folder pointing to the last logs path
 vi apache-zookeeper-3.8.1-bin/conf/zoo-sample.conf
+mv ~/zookeeper/apache-zookeeper-3.8.1-bin/conf/zoo-sample.conf ~/zookeeper/apache-zookeeper-3.8.1-bin/conf/zoo.conf
+
+cd ~/zookeeper/apache-zookeeper-3.8.1-bin/bin
+./zkServer.sh start
+
 
 ```
