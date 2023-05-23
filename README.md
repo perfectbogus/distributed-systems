@@ -17,6 +17,8 @@ mv ~/zookeeper/apache-zookeeper-3.8.1-bin/conf/zoo-sample.conf ~/zookeeper/apach
 
 cd ~/zookeeper/apache-zookeeper-3.8.1-bin/bin
 ./zkServer.sh start
-
+# Create znode 
+./zkCli.sh
+  create /election ""
 
 ```
