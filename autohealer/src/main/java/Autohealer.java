@@ -23,9 +23,12 @@
  */
 
 import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 public class Autohealer implements Watcher {
 
@@ -81,16 +84,24 @@ public class Autohealer implements Watcher {
                     }
                 }
                 break;
-            /**
-             * Add states code here to respond to the relevant events
-             */
+            case NodeChildrenChanged:
+                launchWorkersIfNecessary();
+                break;
         }
     }
 
     private void launchWorkersIfNecessary() {
-        /**
-         * Implement this method to watch and launch new workers if necessary
-         */
+        try {
+            List<String> children = zooKeeper.getChildren(AUTOHEALER_ZNODES_PATH, this);
+            System.out.println("Workers: " + children.size());
+
+            if (children.size() < numberOfWorkers) {
+                startNewWorker();
+            }
+        } catch (InterruptedException | KeeperException | IOException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
