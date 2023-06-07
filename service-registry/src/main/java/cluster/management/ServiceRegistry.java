@@ -23,6 +23,26 @@ public class ServiceRegistry implements Watcher {
                 ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
         System.out.println("Registered to service registry");    }
 
+    public void registerForUpdates() {
+        try {
+            updateAddress();
+        } catch (InterruptedException | KeeperException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public synchronized List<String> getAllServiceAddresses() throws InterruptedException, KeeperException {
+        if (allServiceAddresses == null) {
+            updateAddress();
+        }
+        return allServiceAddresses;
+    }
+
+    public void unregisterFromCluster() throws InterruptedException, KeeperException {
+        if (currentZnode != null && zooKeeper.exists(currentZnode, false) != null) {
+            zooKeeper.delete(currentZnode, -1);
+        }
+    }
     private void createServiceRegistryZnode() {
         try {
             if (zooKeeper.exists(REGISTRY_ZNODE, false) == null) {
@@ -47,10 +67,15 @@ public class ServiceRegistry implements Watcher {
             addresses.add(address);
         }
         this.allServiceAddresses = Collections.unmodifiableList(addresses);
+        System.out.println("The Cluster addresses are: " + this.allServiceAddresses);
     }
 
     @Override
     public void process(WatchedEvent watchedEvent) {
-
+        try {
+            updateAddress();
+        } catch (KeeperException | InterruptedException exception) {
+            exception.printStackTrace();
+        }
     }
 }

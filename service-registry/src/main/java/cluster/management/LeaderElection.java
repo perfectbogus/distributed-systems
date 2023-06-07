@@ -13,20 +13,11 @@ public class LeaderElection implements Watcher {
   private static final int SESSION_TIMEOUT = 3000;
   private ZooKeeper zooKeeper;
   private String currentZnodeName;
+  private final OnElectionCallback onElectionCallback;
 
-  public LeaderElection() {}
-  public LeaderElection(ZooKeeper zooKeeper) {
+  public LeaderElection(ZooKeeper zooKeeper, OnElectionCallback onElectionCallback) {
     this.zooKeeper = zooKeeper;
-  }
-
-  public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
-    LeaderElection leaderElection = new LeaderElection();
-    leaderElection.connectToZookeeper();
-    leaderElection.volunteerForLeadership();
-    leaderElection.reelectLeader();
-    leaderElection.run();
-    leaderElection.close();
-    System.out.println("Disconnected from Zookeeper, exiting application ");
+    this.onElectionCallback = onElectionCallback;
   }
 
   public void volunteerForLeadership() throws KeeperException, InterruptedException {
@@ -45,6 +36,7 @@ public class LeaderElection implements Watcher {
       String smallestChild = children.get(0);
       if (smallestChild.equals(currentZnodeName)) {
         System.out.println("I am the leader");
+        onElectionCallback.onElectedToBeLeader();
         return;
       } else {
         System.out.println("I am not the leader");
@@ -53,6 +45,7 @@ public class LeaderElection implements Watcher {
         predecessorsStat = zooKeeper.exists(ELECTION_NAMESPACE + "/" + predecessorZnodeName, this);
       }
     }
+    onElectionCallback.onWorker();
     System.out.println("Watching znode " + predecessorZnodeName);
   }
 
