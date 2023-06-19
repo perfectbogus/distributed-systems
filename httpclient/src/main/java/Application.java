@@ -10,8 +10,10 @@ public class Application {
     String task1 = "10,200";
     String task2 = "1234,12341234,123412341234";
 
+    String task3 = "1234,4321";
+
     List<String> results = aggregator.sendTasksToWorkers(Arrays.asList(WORKER_ADDRESS_1,
-            WORKER_ADDRESS_1), Arrays.asList(task1, task2));
+            WORKER_ADDRESS_2), Arrays.asList(task1, task2));
 
     for (String result : results) {
       System.out.println(result);
