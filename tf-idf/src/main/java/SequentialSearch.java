@@ -49,7 +49,7 @@ public class SequentialSearch {
     for (Map.Entry<Double, List<String>> docScorePair : documentsByScore.entrySet()) {
       double score = docScorePair.getKey();
       for (String document : docScorePair.getValue()) {
-        System.out.println(String.format("Book: %5 - score: %f", document.split("/")[3]));
+        System.out.printf("Book: %s - score: %f", document.split("/")[3], score);
       }
     }
   }
