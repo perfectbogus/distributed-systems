@@ -13,14 +13,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class ServiceRegistry implements Watcher {
-    private static final String REGISTRY_ZNODE = "/service_registry";
+  public static final String COORDINATORS_REGISTRY_ZNODE = "/coordinators_registry";
+  public static final String WORKERS_REGISTRY_ZNODE = "/workers_registry";
+  private static final String REGISTRY_ZNODE = "/service_registry";
     private final ZooKeeper zooKeeper;
     private String currentZnode = null;
     private List<String> allServiceAddresses = null;
 
-    public ServiceRegistry(ZooKeeper zooKeeper) {
+    public ServiceRegistry(ZooKeeper zooKeeper, String registryZNode) {
         this.zooKeeper = zooKeeper;
-        createServiceRegistryZnode();
+        createServiceRegistryZnode(registryZNode);
     }
 
     public void registerToCluster(String metadata) throws InterruptedException, KeeperException {
@@ -48,10 +50,10 @@ public class ServiceRegistry implements Watcher {
             zooKeeper.delete(currentZnode, -1);
         }
     }
-    private void createServiceRegistryZnode() {
+    private void createServiceRegistryZnode(String registryZnode) {
         try {
-            if (zooKeeper.exists(REGISTRY_ZNODE, false) == null) {
-                zooKeeper.create(REGISTRY_ZNODE, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            if (zooKeeper.exists(registryZnode, false) == null) {
+                zooKeeper.create(registryZnode, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             }
         } catch (InterruptedException | KeeperException e) {
             throw new RuntimeException(e);
